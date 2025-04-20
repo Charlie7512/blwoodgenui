@@ -1,0 +1,68 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export default function AltDashboard() {
+  const [alts, setAlts] = useState([]);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    fetch("/alts.json")
+      .then((res) => res.json())
+      .then((data) => setAlts(data));
+  }, []);
+
+  const addAlt = () => {
+    const newAlt = { username, password };
+    setAlts((prev) => [...prev, newAlt]);
+    setUsername("");
+    setPassword("");
+    // Save to backend or file logic would go here
+  };
+
+  const deleteAlt = (index) => {
+    const updated = [...alts];
+    updated.splice(index, 1);
+    setAlts(updated);
+    // Save to backend or file logic would go here
+  };
+
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4 text-center">blwoodgen Alt Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {alts.map((alt, index) => (
+          <Card key={index} className="rounded-2xl shadow-md">
+            <CardContent className="p-4">
+              <p><strong>Username:</strong> {alt.username}</p>
+              <p><strong>Password:</strong> {alt.password}</p>
+              <Button variant="destructive" className="mt-2" onClick={() => deleteAlt(index)}>
+                Delete
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="mt-8 border-t pt-4">
+        <h2 className="text-xl font-semibold mb-2">Add New Alt</h2>
+        <div className="flex flex-col md:flex-row gap-2">
+          <Input
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <Input
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button onClick={addAlt}>Add Alt</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
